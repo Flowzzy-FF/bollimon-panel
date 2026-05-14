@@ -2,158 +2,53 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bollimon | Merkezi Yönetim</title>
-    <!-- Tasarımı doğrudan gömdük, artık bozulma şansı sıfır -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bollimon | Yönetim</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; padding: 16px; }
-        .max-w-md { max-width: 448px; margin: 0 auto; }
-        .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-radius: 2rem; padding: 24px; margin-bottom: 20px; }
-        h1 { font-style: italic; font-weight: 900; color: #fbbf24; letter-spacing: -0.05em; }
-        input, select { background: #1e293b; border: 2px solid #334155; color: #fbbf24; border-radius: 16px; padding: 14px; font-weight: 800; width: 100%; text-align: center; outline: none; margin-bottom: 10px; }
-        button { width: 100%; font-weight: 800; border-radius: 16px; cursor: pointer; border: none; padding: 16px; transition: transform 0.1s; margin-top: 10px; }
-        button:active { transform: scale(0.95); }
-        .btn-yellow { background: #fbbf24; color: #0f172a; }
-        .btn-blue { background: #2563eb; color: white; }
-        .btn-red { background: #ef4444; color: white; }
-        .btn-slate { background: #334155; color: white; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;900&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: #fff; padding: 20px; }
+        .max-w { max-width: 450px; margin: 0 auto; }
+        .card { background: #1e293b; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        input, select, button { width: 100%; padding: 15px; border-radius: 12px; border: none; margin: 5px 0; font-weight: bold; }
+        button { background: #fbbf24; cursor: pointer; }
         .hidden { display: none; }
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; }
-        td, th { padding: 12px 8px; border-bottom: 1px solid #1e293b; text-align: center; }
-        .admin-badge { background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 99px; }
+        .stok-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <!-- GİRİŞ EKRANI -->
-    <div id="login-screen" class="max-w-md" style="margin-top: 40px;">
-        <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="font-size: 40px;">BOLLİMON</h1>
-            <p style="font-size: 10px; color:#64748b; font-weight:bold; letter-spacing: 2px;">YÖNETİM SİSTEMİ</p>
+<div id="login" class="max-w card">
+    <h1>BOLLİMON</h1>
+    <select id="sube-secim"><option value="Sakarya">Sakarya</option></select>
+    <input type="password" id="sifre" placeholder="Şifre (1234)">
+    <button onclick="giris()">GİRİŞ</button>
+</div>
+
+<div id="panel" class="max-w hidden">
+    <div class="card">
+        <h2 id="baslik">ŞUBE PANELİ</h2>
+        <div class="stok-grid">
+            <div><p>Acısız (Kg)</p><input type="number" id="as_stok" value="0"></div>
+            <div><p>Acılı (Kg)</p><input type="number" id="al_stok" value="0"></div>
         </div>
-        <div class="glass">
-            <select id="sube-secim" onchange="checkAdmin(this.value)">
-                <option value="Sakarya">Sakarya Şubesi</option>
-                <option value="İzmit">İzmit Şubesi</option>
-                <option value="Merkez">Merkez Şubesi</option>
-                <option value="ADMIN" style="color:red; font-weight:bold;">⚠️ YÖNETİCİ GİRİŞİ</option>
-            </select>
-            <input type="password" id="giris-sifre" placeholder="Şifre Giriniz">
-            <button onclick="girisYap()" class="btn-yellow">GİRİŞ YAP</button>
-        </div>
+        <button onclick="kaydet()">STOKU GÜNCELLE</button>
     </div>
+</div>
 
-    <!-- ŞUBE PANELİ -->
-    <div id="main-panel" class="max-w-md hidden">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 id="panel-sube-adi">ŞUBE ADI</h1>
-            <button onclick="location.reload()" style="width: auto; padding: 10px;" class="btn-slate">🔓</button>
-        </div>
-        <!-- (Buraya önceki versiyondaki şube stok kodları gelecek - v14.1 ile aynı) -->
-        <p class="text-center" style="color:#64748b;">Şube işlemleri aktif...</p>
-    </div>
+<script>
+    function giris() {
+        if(document.getElementById('sifre').value == "1234") {
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('panel').classList.remove('hidden');
+            document.getElementById('baslik').innerText = document.getElementById('sube-secim').value + " ŞUBESİ";
+        } else { alert("Hatalı!"); }
+    }
 
-    <!-- ADMIN PANELİ -->
-    <div id="admin-panel" class="max-w-md hidden">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>ADMİN <span class="admin-badge">Yönetici</span></h1>
-            <button onclick="location.reload()" style="width: auto; padding: 10px;" class="btn-slate">Çıkış</button>
-        </div>
-
-        <div class="glass">
-            <h2 style="font-size:12px; color:#fbbf24; margin-bottom:15px;">➕ YENİ ŞUBE EKLE</h2>
-            <input type="text" id="yeni-sube-adi" placeholder="Şube Adı (Örn: Karasu)">
-            <button onclick="subeEkle()" class="btn-blue">SİSTEME KAYDET</button>
-        </div>
-
-        <div class="glass">
-            <h2 style="font-size:12px; color:#fbbf24; margin-bottom:15px;">📊 HAFTALIK PERFORMANS</h2>
-            <canvas id="satisGrafik"></canvas>
-        </div>
-
-        <div class="glass">
-            <h2 style="font-size:12px; color:#fbbf24; margin-bottom:15px;">🏪 ŞUBE LİSTESİ</h2>
-            <div id="admin-sube-listesi" style="font-size: 14px;"></div>
-        </div>
-    </div>
-
-    <script>
-        let subeler = JSON.parse(localStorage.getItem('bollimon_sube_listesi')) || ["Sakarya", "İzmit", "Merkez"];
-        
-        // Şube Listesini Giriş Ekranına Yükle
-        function subeListesiGuncelle() {
-            const select = document.getElementById('sube-secim');
-            const adminList = document.getElementById('admin-sube-listesi');
-            select.innerHTML = subeler.map(s => `<option value="${s}">${s} Şubesi</option>`).join('') + 
-                               `<option value="ADMIN" style="color:red; font-weight:bold;">⚠️ YÖNETİCİ GİRİŞİ</option>`;
-            
-            if(adminList) {
-                adminList.innerHTML = subeler.map(s => `<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>${s}</span> <button onclick="subeSil('${s}')" style="width:auto; padding:4px 8px; margin:0;" class="btn-red">Sil</button></div>`).join('');
-            }
-        }
-
-        function girisYap() {
-            const secilen = document.getElementById('sube-secim').value;
-            const sifre = document.getElementById('giris-sifre').value;
-
-            if (secilen === "ADMIN") {
-                if (sifre === "admin54") { // Admin Şifresi
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                    grafikCiz();
-                    subeListesiGuncelle();
-                } else { alert("Yönetici şifresi hatalı!"); }
-            } else {
-                if (sifre === "1234") {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('main-panel').classList.remove('hidden');
-                    document.getElementById('panel-sube-adi').innerText = secilen.toUpperCase();
-                } else { alert("Şifre hatalı!"); }
-            }
-        }
-
-        function subeEkle() {
-            const ad = document.getElementById('yeni-sube-adi').value.trim();
-            if(ad && !subeler.includes(ad)) {
-                subeler.push(ad);
-                localStorage.setItem('bollimon_sube_listesi', JSON.stringify(subeler));
-                document.getElementById('yeni-sube-adi').value = "";
-                subeListesiGuncelle();
-                alert(ad + " şubesi eklendi!");
-            }
-        }
-
-        function subeSil(ad) {
-            if(confirm(ad + " şubesini silmek istediğinize emin misiniz?")) {
-                subeler = subeler.filter(s => s !== ad);
-                localStorage.setItem('bollimon_sube_listesi', JSON.stringify(subeler));
-                subeListesiGuncelle();
-            }
-        }
-
-        function grafikCiz() {
-            const ctx = document.getElementById('satisGrafik').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: subeler,
-                    datasets: [{
-                        label: 'Haftalık Satış (Kg)',
-                        data: subeler.map(() => Math.floor(Math.random() * 50) + 10), // Şimdilik rastgele, ilerde veriden gelecek
-                        backgroundColor: '#fbbf24'
-                    }]
-                },
-                options: { plugins: { legend: { display: false } } }
-            });
-        }
-
-        // Başlangıçta listeyi doldur
-        subeListesiGuncelle();
-    </script>
+    function kaydet() {
+        localStorage.setItem('as', document.getElementById('as_stok').value);
+        localStorage.setItem('al', document.getElementById('al_stok').value);
+        alert("Kaydedildi!");
+    }
+</script>
 </body>
 </html>
